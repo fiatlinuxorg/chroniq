@@ -1,4 +1,6 @@
 #include <WiFi.h>
+#include <SPI.h>
+#include <XPT2046_Touchscreen.h>
 
 #include "common.h"
 #include "world.h"
@@ -6,9 +8,7 @@
 #include "busview.h"
 #include "msgview.h"
 
-#define TOUCH_CS
 
-#include <XPT2046_Touchscreen.h>
 
 #define NUM_VIEWS 3
 
@@ -27,8 +27,8 @@ World world(&tft);
 View* views[NUM_VIEWS];
 int current_view_idx = 0;
 
-const char *ssid = "<SSID>";
-const char *password = "<PASS>";
+const char *ssid = "Wifi Goliardica";
+const char *password = "Serata_scam123";
 
 void setup() {
     Serial.begin(115200);
@@ -48,7 +48,10 @@ void setup() {
     views[1] = new BusView();
     views[2] = new MsgView();
 
-    ts.begin();
+    // Dio porco che casino
+    mySpi.begin(XPT2046_CLK, XPT2046_MISO, XPT2046_MOSI, XPT2046_CS);
+
+    ts.begin(mySpi);
     ts.setRotation(1);
 
     tft.init();
@@ -64,12 +67,10 @@ void next_frame() {
 }
 
 void loop() {
-    /*
-    if(ts.touched()) {
-        world.flush();
+    if (ts.tirqTouched() && ts.touched()) {
         current_view_idx = (current_view_idx + 1) % NUM_VIEWS;
+        world.flush();
         views[current_view_idx]->present(&world);
-    }*/
-    
+    }
     next_frame();
 }
