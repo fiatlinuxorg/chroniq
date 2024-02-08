@@ -1,25 +1,29 @@
 #include "clockview.h"
-#include <arduino.h>
+#include <Arduino.h>
+
+WiFiUDP ClockView::ntpUDP;
+NTPClient ClockView::ClockView::timeClient(ClockView::ntpUDP, "ntp1.inrim.it",
+    3600, 0);
 
 ClockView::ClockView() {
 
     colors[0] = World::Color::YELLOW;
     colors[1] = World::Color::DARK_YELLOW;
 
-    WiFiUDP ntpUDP;
-    timeClient = new NTPClient(ntpUDP, "ntp1.inrim.it", 3600, 0);
-    timeClient->begin();
-
-    hour = timeClient->getHours();
-    min = timeClient->getMinutes();
+    hour = ClockView::timeClient.getHours();
+    min = ClockView::timeClient.getMinutes();
+    
+    Serial.println("time: " + String(hour) + ":" + String(min));
 }
 
 void ClockView::draw(World* world) {
+    ClockView::timeClient.update();
 
-    if (timeClient->getHours() != hour || timeClient->getMinutes() != min) {
+    if (ClockView::timeClient.getHours() != hour || 
+        ClockView::timeClient.getMinutes() != min) {
         to_update = true;
-        hour = timeClient->getHours();
-        min = timeClient->getMinutes();
+        hour = ClockView::timeClient.getHours();
+        min = ClockView::timeClient.getMinutes();
         Serial.println("time: " + String(hour) + ":" + String(min));
         world->flush();
     }

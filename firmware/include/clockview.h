@@ -14,7 +14,8 @@ public:
     void update(World* world) override;
     void present(World* world) override;
 private:
-    NTPClient* timeClient;
+    static WiFiUDP ntpUDP;
+    static NTPClient timeClient;
     int hour;
     int min;
     bool to_update = true;
