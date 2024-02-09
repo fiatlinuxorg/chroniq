@@ -3,9 +3,7 @@
 
 #include "view.h"
 #include "world.h"
-
-#include <WiFiUdp.h>
-#include <NTPClient.h>
+#include "clock.h"
 
 class ClockView : public View {
 public:
@@ -14,8 +12,7 @@ public:
     void update(World* world) override;
     void present(World* world) override;
 private:
-    static WiFiUDP ntpUDP;
-    static NTPClient timeClient;
+    Clock& clock;
     int hour;
     int min;
     bool to_update = true;

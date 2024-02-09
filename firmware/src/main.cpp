@@ -4,6 +4,7 @@
 
 #include "common.h"
 #include "world.h"
+#include "clock.h"
 #include "clockview.h"
 #include "busview.h"
 #include "msgview.h"
@@ -24,6 +25,7 @@ XPT2046_Touchscreen ts(XPT2046_CS, XPT2046_IRQ);
 TFT_eSPI tft = TFT_eSPI();  
 
 World world(&tft);
+//Clock clock = Clock::get_instance();
 View* views[NUM_VIEWS];
 int current_view_idx = 0;
 
@@ -43,12 +45,8 @@ void setup() {
     Serial.println("\nConnected to the WiFi network");
     Serial.print("Local ESP32 IP: ");
     Serial.println(WiFi.localIP());
-    
-    views[0] = new ClockView();
-    views[1] = new BusView();
-    views[2] = new MsgView();
 
-    // Dio porco che casino
+    // Init touch screen
     mySpi.begin(XPT2046_CLK, XPT2046_MISO, XPT2046_MOSI, XPT2046_CS);
 
     ts.begin(mySpi);
@@ -57,6 +55,10 @@ void setup() {
     tft.init();
     tft.setRotation(1);
 
+    // Init views
+    views[0] = new ClockView();
+    views[1] = new BusView();
+    views[2] = new MsgView();
 }
 
 void next_frame() {
