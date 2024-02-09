@@ -60,6 +60,9 @@ void setup() {
     views[0] = new ClockView();
     views[1] = new BusView();
     views[2] = new MsgView();
+
+    TTApi api;
+    api.get_route("5/");
 }
 
 void next_frame() {

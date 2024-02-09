@@ -20,7 +20,7 @@
 #include <HTTPClient.h>
 
 route_t::route_t(String short_name="", int* route_id=nullptr) 
-    : short_name(short_name), route_id(route_id) {
+    : short_name(short_name), route_id(route_id) { }
 
 TTApi::TTApi() { }
 
@@ -34,9 +34,9 @@ route_t TTApi::get_route(String short_name) {
 
     JSONVar json_root = JSON.parse(response);
     if (JSON.typeof(json_root) == "undefined") {
-        Serial.print("Parsing input failed!");<Arduino_JSON.h>
+        Serial.print("Parsing input failed!");
         return route_t();
-    } <Arduino_JSON.h>
+    } 
 
     Serial.print(JSON.typeof(json_root))
 

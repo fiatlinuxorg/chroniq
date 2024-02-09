@@ -31,8 +31,8 @@ Clock& Clock::get_instance() {
  * @param udp The UDP object to use.
  * @param ntp_server The NTP server to use.
  */
-Clock::Clock(WiFiUDP &udp, const char* ntp_server) : 
-    ntp_client(udp, ntp_server, 3600, 0) {
+Clock::Clock(WiFiUDP &udp, const char* ntp_server)
+    : ntp_client(udp, ntp_server, 3600, 0) {
     ntp_client.begin();
 }
 

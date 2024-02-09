@@ -19,10 +19,17 @@
 
 #include "Arduino.h"
 
+struct route_t {
+    String  short_name;
+    int*    route_id;
+
+    route_t(String short_name="", int* route_id=nullptr);
+};
+
 class TTApi {
     public:
         TTApi();
-        // TODO: implement trips_new endpoint
+        route_t get_route(String short_name);
 
     private:
         // Constants
