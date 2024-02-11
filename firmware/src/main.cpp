@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <SPI.h>
 #include <XPT2046_Touchscreen.h>
+#include <vector>
 
 #include "common.h"
 #include "world.h"
@@ -8,8 +9,6 @@
 #include "clockview.h"
 #include "busview.h"
 #include "msgview.h"
-
-
 
 #define NUM_VIEWS 3
 
@@ -19,33 +18,23 @@
 #define XPT2046_CLK 25
 #define XPT2046_CS 33
 
+using namespace std;
+
 SPIClass mySpi = SPIClass(VSPI);
 XPT2046_Touchscreen ts(XPT2046_CS, XPT2046_IRQ);
 
 TFT_eSPI tft = TFT_eSPI();  
 
 World world(&tft);
-//Clock clock = Clock::get_instance();
 View* views[NUM_VIEWS];
 int current_view_idx = 0;
 
-const char *ssid = "Wifi Goliardica";
-const char *password = "Serata_scam123";
+const char *ssid = "<SSID>";
+const char *password = "<PASS>";
 
 void setup() {
     Serial.begin(115200);
-    WiFi.begin(ssid, password);
     
-    Serial.println("\nConnecting");
-
-    while(WiFi.status() != WL_CONNECTED){
-        delay(100);
-    }
-
-    Serial.println("\nConnected to the WiFi network");
-    Serial.print("Local ESP32 IP: ");
-    Serial.println(WiFi.localIP());
-
     // Init touch screen
     mySpi.begin(XPT2046_CLK, XPT2046_MISO, XPT2046_MOSI, XPT2046_CS);
 
@@ -54,6 +43,18 @@ void setup() {
 
     tft.init();
     tft.setRotation(1);
+
+    // Init wifi
+    Serial.println("\nConnecting");
+
+    WiFi.begin(ssid, password);
+    while(WiFi.status() != WL_CONNECTED){
+        delay(100);
+    }
+
+    Serial.println("\nConnected to the WiFi network");
+    Serial.print("Local ESP32 IP: ");
+    Serial.println(WiFi.localIP());
 
     // Init views
     views[0] = new ClockView();
@@ -69,6 +70,8 @@ void next_frame() {
 }
 
 void loop() {
+    //Clock clock = Clock::get_instance();
+    
     if (ts.tirqTouched() && ts.touched()) {
         current_view_idx = (current_view_idx + 1) % NUM_VIEWS;
         world.flush();

@@ -7,12 +7,12 @@
 
 using namespace std;
 
-/* *
+/**
  * This class is a singleton that provides the current time.
  *
  * It uses the NTPClient library to get the current time from an NTP server.
  * 
- * */
+ */
 class Clock {
     public:
         static Clock& get_instance();
