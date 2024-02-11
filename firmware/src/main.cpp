@@ -1,3 +1,12 @@
+/**
+ * Main file for the ESP32 - main.cpp
+ *
+ * This file is used to run the main loop of the ESP32.
+ *
+ * Author:  Riccardo Segala, Mirko Lana
+ * Date:    11/02/2024
+ **/
+
 #include <WiFi.h>
 #include <SPI.h>
 #include <XPT2046_Touchscreen.h>
@@ -30,7 +39,7 @@ View* views[NUM_VIEWS];
 int current_view_idx = 0;
 
 const char *ssid = "<SSID>";
-const char *password = "<PASS>";
+const char *password = "<PASSWORD>";
 
 void setup() {
     Serial.begin(115200);
@@ -79,11 +88,14 @@ void loop() {
 
         if (p.x >= 2466) {
             current_view_idx = (current_view_idx + 1) % NUM_VIEWS;
+            world.flush();
         } else if (p.x <= 1233) {
             current_view_idx = (current_view_idx - 1 + NUM_VIEWS) % NUM_VIEWS;
+            world.flush();
+        } else {
+            // TODO: view clicked method
         }
 
-        world.flush();
         views[current_view_idx]->present(&world);
     }
     next_frame();

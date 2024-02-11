@@ -6,11 +6,22 @@
 
 using namespace std;
 
+/**
+ * Constructor for the BusView class.
+ *
+ * @param stop_id The ID of the stop.
+ * @param bus_line The name of the bus line.
+ */
 BusView::BusView(String stop_id, String bus_line)
     : stop_id(stop_id), bus_line(bus_line) {
     time = millis();
 }
 
+/**
+ * Update the view.
+ *
+ * @param world The world to update.
+ */
 void BusView::update(World* world) {
     if (millis() - time > 5000) {
         time = millis();
@@ -18,21 +29,24 @@ void BusView::update(World* world) {
     }
 }
 
+/**
+ * Draw the view.
+ *
+ * @param world The world to draw on.
+ */
 void BusView::draw(World* world) {
     if (to_draw) {
-        auto routes = api.get_routes_from_stop(stop_id, bus_line);
+        route_t route = api.get_route(stop_id, bus_line);
 
-        if (routes.empty()) {
+        if (!route.is_valid()) {
             world->draw_str(2, 2, "PORCO", 1, World::WHITE);
-            world->draw_str(10, 2, "DIO", 1, World::WHITE);
+            world->draw_str(2, 10, "DIO", 1, World::WHITE);
         } else {
-            auto route = routes[0];
-            String route_name = route.name;
             bool slash = false;
 
-            if (route_name.indexOf("/") != -1) {
+            if (route.name.indexOf("/") != -1) {
                 slash = true;
-                route_name.replace("/", "");
+                route.name.replace("/", "");
             }
             
             world->reset();
@@ -51,6 +65,11 @@ void BusView::draw(World* world) {
     }
 }
 
+/**
+ * Present the view.
+ *
+ * @param world The world to present on.
+ */
 void BusView::present(World* world) {
     to_draw = true;
 }
