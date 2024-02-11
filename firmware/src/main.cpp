@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <SPI.h>
 #include <XPT2046_Touchscreen.h>
+#include <vector>
 
 #include "common.h"
 #include "world.h"
@@ -8,9 +9,6 @@
 #include "clockview.h"
 #include "busview.h"
 #include "msgview.h"
-#include "ttapi.h"
-
-
 
 #define NUM_VIEWS 3
 
@@ -19,6 +17,8 @@
 #define XPT2046_MISO 39
 #define XPT2046_CLK 25
 #define XPT2046_CS 33
+
+using namespace std;
 
 SPIClass mySpi = SPIClass(VSPI);
 XPT2046_Touchscreen ts(XPT2046_CS, XPT2046_IRQ);
@@ -29,8 +29,8 @@ World world(&tft);
 View* views[NUM_VIEWS];
 int current_view_idx = 0;
 
-const char *ssid = "Wifi Goliardica";
-const char *password = "Serata_scam123";
+const char *ssid = "<SSID>";
+const char *password = "<PASS>";
 
 void setup() {
     Serial.begin(115200);
@@ -60,9 +60,6 @@ void setup() {
     views[0] = new ClockView();
     views[1] = new BusView();
     views[2] = new MsgView();
-
-    TTApi api;
-    api.get_route("5/");
 }
 
 void next_frame() {
