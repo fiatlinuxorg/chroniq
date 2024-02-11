@@ -73,3 +73,12 @@ void BusView::draw(World* world) {
 void BusView::present(World* world) {
     to_draw = true;
 }
+
+/**
+ * Handle a click on the view.
+ *
+ * @param world The world to handle the click on.
+ */
+void BusView::click(World* world) {
+    // TODO: implement
+}

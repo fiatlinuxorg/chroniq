@@ -8,6 +8,7 @@ public:
     virtual void draw(World* world);
     virtual void update(World* world);
     virtual void present(World* world);
+    virtual void click(World* world);
 };
 
 #endif

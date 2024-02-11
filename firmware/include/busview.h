@@ -20,6 +20,7 @@ public:
     void draw(World* world) override;
     void update(World* world) override;
     void present(World* world) override;
+    void click(World* world) override;
 private:
     // Variables
     bool to_draw = true;

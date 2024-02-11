@@ -39,3 +39,8 @@ void ClockView::update(World* world) {
 void ClockView::present(World* world) {
     to_update = true;
 }
+
+void ClockView::click(World* world) {
+    world->set(random(W_WIDTH), 
+            world->gen_cell(World::Color::BLUE, World::CellType::WATER));
+}

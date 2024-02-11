@@ -27,14 +27,51 @@ World::World(TFT_eSPI* tft) : tft(tft){
 }
 
 void World::step() {
-    for(int i=width*(height-1)-1; i>=0; i--) {
+
+    for(int i=width*(height)-1; i>=0; i--) {
         if (!is_empty(i) && !is_wall(i)) {
-            if(is_empty(i+width)) {
-                swap(i, i+width);
-            } else if(is_empty(i+width-1)) {
-                swap(i, i+width-1);
-            } else if((i+width+1)<width*height && is_empty(i+width+1)) {
-                swap(i, i+width+1);
+            switch(get_type(i)) {
+                case CellType::SAND: {
+                    if(i<width*(height-1)) {
+                        if(is_empty(i+width)) {
+                            swap(i, i+width);
+                        } else if(is_empty(i+width-1)) {
+                            swap(i, i+width-1);
+                        } else if((i+width+1)<width*height && is_empty(i+width+1)) {
+                            swap(i, i+width+1);
+                        }
+                    }
+                } break;
+
+                case CellType::WATER: {
+
+                    if(get_type(i+width) == CellType::SAND) {
+                        set(i+width,
+                                (get(i+width) & 0b01000011) | Color::DARK_YELLOW << 2);
+                    }
+                    if(get_type(i-1) == CellType::SAND) {
+                        set(i-1,
+                                (get(i-1) & 0b01000011) | Color::DARK_YELLOW << 2);
+                    }
+                    if(get_type(i+1) == CellType::SAND) {
+                        set(i+1,
+                                (get(i+1) & 0b01000011) | Color::DARK_YELLOW << 2);
+                    }
+
+                    if(i>=width*(height-1)) {
+                        set(i, 0);
+                    } else if(is_empty(i+width)) {
+                        swap(i, i+width);
+                    } else if(is_empty(i+width-1)) {
+                        swap(i, i+width-1);
+                    } else if((i+width+1)<width*height && is_empty(i+width+1)) {
+                        swap(i, i+width+1);
+                    } else if((i+1)<width*height && is_empty(i+1)) {
+                        swap(i, i+1);
+                    } else if(is_empty(i-1)) {
+                        swap(i, i-1);
+                    }
+                } break;
             }
         }
     }
@@ -44,7 +81,7 @@ void World::draw() {
     for (int x = 0; x < width; x++) {
         for (int y = 0; y < height; y++) {
             if (!is_empty(x, y)) {
-                short color = COLOR_PALETTE[(get(x + y*width) >> 1)%NUM_COLORS];
+                short color = COLOR_PALETTE[(get(x + y*width) >> 2)%NUM_COLORS];
                 tft->fillRect(x*WIDTH/width, y*HEIGHT/height, WIDTH/width, HEIGHT/height, color);
             } else {
                 tft->fillRect(x*WIDTH/width, y*HEIGHT/height, WIDTH/width, HEIGHT/height, BG_COLOR);
@@ -74,7 +111,7 @@ void World::swap(int i1, int i2) {
 }
 
 bool World::is_empty(int idx) {
-    return (grid[idx] & 0x01) == 0;
+    return (grid[idx] & 0b11) == 0;
 }
 bool World::is_empty(int x, int y) {
     return is_empty(x + y*width);
@@ -92,19 +129,19 @@ bool World::is_wall(int idx) {
     return (grid[idx]>>7)!=0;
 }
 
-char World::gen_rand_cell(enum World::Color colors[], int num_colors) {
-    return 0x01 | (colors[random(num_colors)]<<1);
+enum World::CellType World::get_type(int idx) {
+    return (enum CellType)(grid[idx] & 0b11);
 }
 
-char World::gen_rand_wall_cell(enum World::Color colors[], int num_colors) {
-    return gen_rand_cell(colors, num_colors) | (1 << 7);
+char World::gen_cell(enum World::Color color, enum World::CellType type) {
+    return (type) | (color << 2);
 }
 
 char World::gen_wall_cell(enum World::Color color) {
-    return 0x01 | (color<<1) | (1 << 7);
+    return 0x01 | (color<<2) | (1 << 7);
 }
 
-void World::draw_font_rand(int x, int y, const char* buf, int scale, enum World::Color colors[], int num_colors) {
+void World::draw_font(int x, int y, const char* buf, int scale, enum World::Color color) {
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 4; j++) {
             if(x+j>=width) {
@@ -113,7 +150,7 @@ void World::draw_font_rand(int x, int y, const char* buf, int scale, enum World:
             if (buf[i] & (1 << (7-j))) {
                 for (int k = 0; k < scale; k++) {
                     for (int l = 0; l < scale; l++) {
-                        grid[x+j*scale + k + (y+i*scale + l)*width] = gen_rand_wall_cell(colors, num_colors);
+                        grid[x+j*scale + k + (y+i*scale + l)*width] = gen_wall_cell(color);
                     }
                 }
             }
@@ -122,10 +159,6 @@ void World::draw_font_rand(int x, int y, const char* buf, int scale, enum World:
             break;
         }
     }
-}
-
-void World::draw_font(int x, int y, const char* buf, int scale, enum World::Color color) {
-    draw_font_rand(x, y, buf, scale, &color, 1);
 }
 
 int World::draw_char(int x, int y, char c, int scale, enum World::Color color) {
@@ -172,6 +205,10 @@ void World::draw_rect(int x, int y, int w, int h, enum World::Color color) {
             grid[x+i + (y+j)*width] = gen_wall_cell(color);
         }
     }
+    grid[x+y*width] = 0;
+    grid[x+w-1 + y*width] = 0;
+    grid[x+(h+1)*width] = 0;
+    grid[x+w-1 + (h+1)*width] = 0;
 }
 
 void World::flush() {
