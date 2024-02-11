@@ -11,7 +11,8 @@
 #define BUSVIEW_H
 
 #include "view.h"
-#include "flbustn.h"
+//#include "flbustn.h"
+#include "traquantopassa.h"
 
 class BusView : public View {
 public:
@@ -25,7 +26,8 @@ private:
     // Variables
     bool to_draw = true;
     unsigned long time;
-    FLBusTN api;
+    //FLBusTN api;
+    TraQuantoPassa api;
     String stop_id, bus_line;
 
 };

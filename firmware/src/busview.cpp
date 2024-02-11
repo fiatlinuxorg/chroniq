@@ -36,12 +36,14 @@ void BusView::update(World* world) {
  */
 void BusView::draw(World* world) {
     if (to_draw) {
-        route_t route = api.get_route(stop_id, bus_line);
+        //route_t route = api.get_route(stop_id, bus_line);
+        auto routes = api.get_routes_from_stop(stop_id, bus_line);
 
-        if (!route.is_valid()) {
+        if (/*!route.is_valid()*/ routes.empty()) {
             world->draw_str(2, 2, "PORCO", 1, World::WHITE);
             world->draw_str(2, 10, "DIO", 1, World::WHITE);
         } else {
+            auto route = routes[0];
             bool slash = false;
 
             if (route.name.indexOf("/") != -1) {
