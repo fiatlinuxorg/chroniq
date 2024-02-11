@@ -43,6 +43,7 @@ void setup() {
 
     tft.init();
     tft.setRotation(1);
+    tft.fillScreen(TFT_BLACK);
 
     // Init wifi
     Serial.println("\nConnecting");
@@ -58,8 +59,9 @@ void setup() {
 
     // Init views
     views[0] = new ClockView();
-    views[1] = new BusView();
-    views[2] = new MsgView();
+    views[1] = new BusView("fiera", "5");
+    views[2] = new BusView("fiera", "3");
+    //views[2] = new MsgView();
 }
 
 void next_frame() {
@@ -73,7 +75,14 @@ void loop() {
     //Clock clock = Clock::get_instance();
     
     if (ts.tirqTouched() && ts.touched()) {
-        current_view_idx = (current_view_idx + 1) % NUM_VIEWS;
+        TS_Point p = ts.getPoint();
+
+        if (p.x >= 2466) {
+            current_view_idx = (current_view_idx + 1) % NUM_VIEWS;
+        } else if (p.x <= 1233) {
+            current_view_idx = (current_view_idx - 1 + NUM_VIEWS) % NUM_VIEWS;
+        }
+
         world.flush();
         views[current_view_idx]->present(&world);
     }

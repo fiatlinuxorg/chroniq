@@ -12,7 +12,7 @@
 
 #define TOUCH_CS
 
-const char FONTSET_STR[] = "0123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ!?@#$%^&*()-+=;<>[]{}";
+const char FONTSET_STR[] = "0123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ!?@#$%^&*()-+=;<>[]{}'";
 
 const char FONTSET[] = {
     // 0
@@ -131,6 +131,8 @@ const char FONTSET[] = {
     0x10, 0x20, 0x40, 0x20, 0x10,
     // }
     0x40, 0x20, 0x10, 0x20, 0x40,
+    // '
+    0x20, 0x20, 0x40, 0x00, 0x00,
 };
 
 #endif

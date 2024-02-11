@@ -1,5 +1,7 @@
 #include "world.h"
 
+#include <ctype.h>
+
 #define NUM_COLORS 16
 const int COLOR_PALETTE[] = {
     ~0x0000,    // BLACK
@@ -127,6 +129,7 @@ void World::draw_font(int x, int y, const char* buf, int scale, enum World::Colo
 }
 
 int World::draw_char(int x, int y, char c, int scale, enum World::Color color) {
+    c = toupper(c);
     int font_idx=-1;
     for (int i = 0; FONTSET_STR[i]; i++) {
         if (c == FONTSET_STR[i]) {

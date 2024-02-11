@@ -94,6 +94,8 @@ String TraQuantoPassa::make_request(String endpoint, String query) {
                 http.errorToString(httpCode).c_str());
     }
 
+    Serial.println(response);
+
     http.end();
     return response;
 }
@@ -123,7 +125,7 @@ bool TraQuantoPassa::is_same_route(String name1, String name2) {
  */
 World::Color TraQuantoPassa::get_route_color(String route_name) {
     if (is_same_route("5", route_name)) {
-        return World::YELLOW;
+        return World::DARK_YELLOW;
     } else if (is_same_route("3", route_name)) {
         return World::RED;
     }
