@@ -38,8 +38,8 @@ World world(&tft);
 View* views[NUM_VIEWS];
 int current_view_idx = 0;
 
-const char *ssid = "rete_del_non_godo";
-const char *password = "Sessino123";
+const char *ssid = "<SSID>";
+const char *password = "<PASSWORD>";
 
 void setup() {
     Serial.begin(115200);

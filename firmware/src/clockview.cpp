@@ -34,6 +34,12 @@ void ClockView::draw(World* world) {
 void ClockView::update(World* world) {
     if(random(40)==0)
         world->remove_rand_wall();
+
+    if (last_click != 0 && millis() - last_click > 1000) {
+        world->flush();
+        to_update = true;
+        last_click = 0;
+    }
 }
 
 void ClockView::present(World* world) {
@@ -43,4 +49,5 @@ void ClockView::present(World* world) {
 void ClockView::click(World* world) {
     world->set(random(W_WIDTH), 
             world->gen_cell(World::Color::BLUE, World::CellType::WATER));
+    last_click = millis();
 }

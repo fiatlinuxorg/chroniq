@@ -16,6 +16,9 @@ private:
     Clock& clock;
     int hour;
     int min;
+
+    unsigned long last_click = 0;
+
     bool to_update = true;
     World::Color colors[2];
 };
