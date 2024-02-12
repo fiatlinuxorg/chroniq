@@ -1,9 +1,7 @@
-<h1 align="center">
-    <!--<a href="#fiatlinux-chroniq-page"><img width="800" src="https://fiatlinux.it/banner/3"></a><br>-->
-    Chroniq
-</h1>
+<a align="center" href="#fiatlinux-chroniq-page"><img src="https://fiatlinux.it/banner/4"></a><br>
 
-_<p align="center">Your Open-Source knick-knack.</p>_
+
+<!--_<p align="center">Your Open-Source knick-knack.</p>_-->
 
 <p align="center">
     <img src="https://img.shields.io/github/license/fiatlinuxorg/chroniq" alt="License">
