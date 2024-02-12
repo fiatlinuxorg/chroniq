@@ -33,7 +33,7 @@ void World::step() {
             switch(get_type(i)) {
                 case CellType::SAND: {
                     if(i<width*(height-1)) {
-                        if(is_empty(i+width)) {
+                        if(is_empty(i+width) || (get_type(i+width) == CellType::WATER)) {
                             swap(i, i+width);
                         } else if(is_empty(i+width-1)) {
                             swap(i, i+width-1);
@@ -44,6 +44,18 @@ void World::step() {
                 } break;
 
                 case CellType::WATER: {
+                    
+                    if(i<width*(height-1) && is_empty(i+width)) {
+                        swap(i, i+width);
+                    } else if(i<width*(height-1) && is_empty(i+width-1)) {
+                        swap(i, i+width-1);
+                    } else if(i<width*(height-1) && (i+width+1)<width*height && is_empty(i+width+1)) {
+                        swap(i, i+width+1);
+                    } else if(is_empty(i-1)) {
+                        swap(i, i-1);
+                    } else if((i+1)<width*height && is_empty(i+1)) {
+                        swap(i, i+1);
+                    } 
 
                     if(get_type(i+width) == CellType::SAND) {
                         set(i+width,
@@ -58,19 +70,6 @@ void World::step() {
                                 (get(i+1) & 0b01000011) | Color::DARK_YELLOW << 2);
                     }
 
-                    if(i>=width*(height-1)) {
-                        set(i, 0);
-                    } else if(is_empty(i+width)) {
-                        swap(i, i+width);
-                    } else if(is_empty(i+width-1)) {
-                        swap(i, i+width-1);
-                    } else if((i+width+1)<width*height && is_empty(i+width+1)) {
-                        swap(i, i+width+1);
-                    } else if((i+1)<width*height && is_empty(i+1)) {
-                        swap(i, i+1);
-                    } else if(is_empty(i-1)) {
-                        swap(i, i-1);
-                    }
                 } break;
             }
         }
