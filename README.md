@@ -1,8 +1,5 @@
 <a align="center" href="#fiatlinux-chroniq-page"><img src="https://fiatlinux.it/banner/4"></a><br>
 
-
-<!--_<p align="center">Your Open-Source knick-knack.</p>_-->
-
 <p align="center">
     <img src="https://img.shields.io/github/license/fiatlinuxorg/chroniq" alt="License">
     <img src="https://img.shields.io/github/watchers/fiatlinuxorg/chroniq">
@@ -15,6 +12,9 @@
 - [Installation](#installation)
     - [Prerequisites](#prerequisites)
     - [Building and Flashing](#building-and-flashing)
+        - [With PlatformIO CLI](#with-platformio-cli)
+        - [With PlatformIO IDE](#with-platformio-ide)
+        - [With Arduino IDE](#with-arduino-ide)
 - [License](#license)
 - [Contributing](#contributing)
     - [Bug Reports](#bug-reports)
@@ -29,6 +29,7 @@ Chroniq is an open-source project that aims to create a simple and easy-to-use d
 
 ### Prerequisites
 - [PlatformIO CLI](https://platformio.org/install/cli)
+- [PlatformIO IDE](https://platformio.org/platformio-ide)
 - [Arduino IDE](https://www.arduino.cc/en/software) (optional)
 
 ### Building and Flashing
@@ -42,22 +43,29 @@ Chroniq is an open-source project that aims to create a simple and easy-to-use d
     ```
 
 #### With PlatformIO CLI
-1. Build the project:
+1. Change directory to the firmware folder:
+    ```sh
+    cd firmware
+    ```
+2. Build the project:
     ```sh
     pio run
     ```
-2. Flash the project to the board:
+3. Flash the project to the board:
     ```sh
     pio run --target upload
     ```
-3. Done!
+4. Done!
+
+#### With PlatformIO IDE
+1. Open the project in the PlatformIO IDE.
+2. Click the build button.
+3. Click the upload button.
+4. Done!
 
 #### With Arduino IDE
-1. Open the project in the Arduino IDE:
-    ```sh
-    arduino chroniq.ino
-    ```
-2. Select the board and port from the `Tools` menu.
+1. Open the project in the Arduino IDE.
+2. Click the build button.
 3. Click the upload button.
 4. Done!
 
