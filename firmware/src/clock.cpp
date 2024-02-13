@@ -1,3 +1,12 @@
+/**
+ * Clock class - clock.cpp
+ *
+ * This file contains the implementation of the Clock class.
+ *
+ * Author:  Mirko Lana
+ * Date:    09/02/2024
+ */
+
 #include <iostream>
 #include <memory>
 #include <WiFiUdp.h>

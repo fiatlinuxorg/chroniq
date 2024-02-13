@@ -7,6 +7,7 @@
  * Date:    11/02/2024
  **/
 
+#include "busapi.h"
 #include "flbustn.h"
 #include "world.h"
 
@@ -18,30 +19,6 @@
 using namespace std;
 
 /**
- * Constructor for the route_t struct.
- * 
- * @param name The name of the route.
- * @param minutes The minutes until the next trip.
- * @param color The color of the route.
- */
-route_t::route_t(String name, int minutes, World::Color color) :
-    name(name), minutes(minutes), color(color) { /* Empty constructor */ }
-
-/**
- * Check if the route is valid.
- *
- * @return True if the route is valid, false otherwise.
- */
-bool route_t::is_valid() {
-    return name != "N/A" && minutes != -1;
-}
-
-/**
- * Constructor for the FLBusTN class.
- */
-FLBusTN::FLBusTN() { /* Empty constructor */ }
-
-/**
  * Get the route for a specific stop and route name.
  * 
  * @param stop_id The ID of the stop.
@@ -50,7 +27,7 @@ FLBusTN::FLBusTN() { /* Empty constructor */ }
  * @return The route for the stop and route name.
  */
 route_t FLBusTN::get_route(String stop_id, String route_name) {
-    String response = make_request("/" + stop_id + "/" + route_name);
+    String response = make_request(API_URL + stop_id + "/" + route_name);
 
     if (response == "{}") {
         return route_t("N/A", -1, World::Color::BLACK);
@@ -77,7 +54,7 @@ route_t FLBusTN::get_route(String stop_id, String route_name) {
  * @return The routes for the stop.
  */
 vector<route_t> FLBusTN::get_routes(String stop_id) {
-    String response = make_request("/" + stop_id);
+    String response = make_request(API_URL + stop_id);
 
     Serial.println(response);
 
@@ -101,36 +78,6 @@ vector<route_t> FLBusTN::get_routes(String stop_id) {
     }
 
     return routes;
-}
-
-/**
- * Make a request to the FiatLinux BusTN API.
- * 
- * @param endpoint The endpoint of the API.
- * 
- * @return The response from the API.
- */
-String FLBusTN::make_request(String endpoint) {
-    HTTPClient http;
-    String url = API_URL + endpoint;
-    String response = "{}";
-    
-    http.begin(url.c_str());
-
-    int httpCode = http.GET();
-    Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-
-    if (httpCode == HTTP_CODE_OK) {
-        response = http.getString();
-    } else {
-        Serial.printf("[HTTP] GET... failed, error: %s\n",
-                http.errorToString(httpCode).c_str());
-    }
-
-    Serial.println(response);
-
-    http.end();
-    return response;
 }
 
 /**

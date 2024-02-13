@@ -1,8 +1,17 @@
-/*
- * This file contains the implementation of the TraQuantoPassa class.
+/**
+ * traquantopassa.in API interaction class - traquantopassa.cpp
  *
+ * The class is used to get the next trips from a stop, given its ID.
+ *
+ * Aknowledgements:
+ * - Matteo Contrini (https://github.com/matteocontrini) the creator of the
+ *   traquantopassa.in website and API.
+ *
+ * Author:  Mirko Lana
+ * Date:    11/02/2024
  */
 
+#include "busapi.h"
 #include "traquantopassa.h"
 #include "world.h"
 
@@ -14,34 +23,37 @@
 using namespace std;
 
 /**
- * Constructor for the route_t struct.
+ * Get the next trip from a stop, given its ID and the name of the route.
  * 
- * @param name The name of the route.
- * @param minutes The minutes until the next trip.
- * @param color The color of the route.
+ * @param stop_id The ID of the stop.
+ * @param route_name The name of the route.
+ * 
+ * @return A route_t object, containing the name of the route, the minutes until
+ *         the next trip and the color of the route.
  */
-route_t::route_t(String name, int minutes, World::Color color) :
-    name(name), minutes(minutes), color(color) { /* Empty constructor */ }
+route_t TraQuantoPassa::get_route(String stop_id, String route_name) {
+    auto routes = get_routes(stop_id);
 
-/**
- * Constructor for the TraQuantoPassa class.
- */
-TraQuantoPassa::TraQuantoPassa() { /* Empty constructor */ }
+    for (auto route : routes) {
+        if (is_same_route(route.name, route_name)) {
+            return route;
+        }
+    }
+
+    return route_t();
+}
 
 /**
  * Get the next trips from a stop, given its ID.
  * 
  * @param stop_id The ID of the stop.
- * @param route_name The name of the route to filter the results. If empty, all
- *                  the routes are returned.
  * 
  * @return A vector of route_t objects, containing the name of the route, the
  *         minutes until the next trip and the color of the route.
  */
-vector<route_t> TraQuantoPassa::get_routes_from_stop(String stop_id,
-        String route_name) {
+vector<route_t> TraQuantoPassa::get_routes(String stop_id) {
     vector<route_t> routes;
-    String response = make_request("stops/"+stop_id);
+    String response = make_request(API_URL + "stops/" + stop_id);
 
     if (response == "{}") {
         return routes;
@@ -58,44 +70,31 @@ vector<route_t> TraQuantoPassa::get_routes_from_stop(String stop_id,
     }
 
     for(int i = 0; i < trips.length(); ++i) {
-        String _route_name = trips[i]["routeName"];
-        if (route_name == "" || is_same_route(route_name, _route_name)) {
-            int minutes = trips[i]["minutes"];
-            routes.push_back(route_t(_route_name, minutes,
-                        get_route_color(_route_name)));
-        }
+        String route_name = trips[i]["routeName"];
+        int minutes = trips[i]["minutes"];
+        World::Color color = get_route_color(route_name);
+
+        routes.push_back(route_t(route_name, minutes, color));
     }
 
     return routes;
 }
 
 /**
- * Make a request to the traquantopassa.in API.
+ * Get the color of a route.
  * 
- * @param endpoint The endpoint of the API.
- * @param query The query to append to the endpoint.
+ * @param route_name The name of the route.
  * 
- * @return The response from the API.
+ * @return The color of the route.
  */
-String TraQuantoPassa::make_request(String endpoint, String query) {
-    HTTPClient http;
-    String url = API_URL + endpoint + query;
-    String response = "{}";
-
-    http.begin(url.c_str());
-
-    int httpCode = http.GET();
-    Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-
-    if (httpCode == HTTP_CODE_OK) {
-        response = http.getString();
-    } else {
-        Serial.printf("[HTTP] GET... failed, error: %s\n",
-                http.errorToString(httpCode).c_str());
+World::Color TraQuantoPassa::get_route_color(String route_name) {
+    if (is_same_route("5", route_name)) {
+        return World::DARK_YELLOW;
+    } else if (is_same_route("3", route_name)) {
+        return World::RED;
     }
 
-    http.end();
-    return response;
+    return World::BLACK;
 }
 
 /**
@@ -114,19 +113,4 @@ bool TraQuantoPassa::is_same_route(String name1, String name2) {
     return (name1 + "/") == name2 ? true : (name2 + "/") == name1;
 }
 
-/**
- * Get the color of a route.
- * 
- * @param route_name The name of the route.
- * 
- * @return The color of the route.
- */
-World::Color TraQuantoPassa::get_route_color(String route_name) {
-    if (is_same_route("5", route_name)) {
-        return World::YELLOW;
-    } else if (is_same_route("3", route_name)) {
-        return World::RED;
-    }
 
-    return World::BLACK;
-}

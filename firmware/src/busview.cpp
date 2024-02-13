@@ -1,4 +1,15 @@
+/**
+ * Bus View class - busview.cpp
+ *
+ * This file contains the implementation of the Bus View class.
+ *
+ * Author:  Mirko Lana
+ * Date:    11/02/2024
+ */
+
 #include "busview.h"
+//#include "flbustn.h"
+#include "traquantopassa.h"
 #include "common.h"
 #include "world.h"
 
@@ -15,6 +26,12 @@ using namespace std;
 BusView::BusView(String stop_id, String bus_line)
     : stop_id(stop_id), bus_line(bus_line) {
     time = millis();
+    
+//  NOTES: In future, the BusView API will be set by the user inside a
+//  configuration file. For now, we manually set it to TraQuantoPassa.
+//
+//  api = new FLBusTN(); // This is the FiatLinux BusTN API.
+    api = new TraQuantoPassa();
 }
 
 /**
@@ -36,14 +53,12 @@ void BusView::update(World* world) {
  */
 void BusView::draw(World* world) {
     if (to_draw) {
-        //route_t route = api.get_route(stop_id, bus_line);
-        auto routes = api.get_routes_from_stop(stop_id, bus_line);
+        route_t route = api->get_route(stop_id, bus_line);
 
-        if (/*!route.is_valid()*/ routes.empty()) {
+        if (!route.is_valid()) {
             world->draw_str(2, 2, "PORCO", 1, World::WHITE);
             world->draw_str(2, 10, "DIO", 1, World::WHITE);
         } else {
-            auto route = routes[0];
             bool slash = false;
 
             if (route.name.indexOf("/") != -1) {
@@ -83,4 +98,11 @@ void BusView::present(World* world) {
  */
 void BusView::click(World* world) {
     // TODO: implement
+}
+
+/**
+ * Destructor for the BusView class.
+ */
+BusView::~BusView() {
+    delete api;
 }
