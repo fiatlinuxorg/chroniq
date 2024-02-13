@@ -11,8 +11,7 @@
 #define BUSVIEW_H
 
 #include "view.h"
-//#include "flbustn.h"
-#include "traquantopassa.h"
+#include "busapi.h"
 
 class BusView : public View {
 public:
@@ -22,12 +21,12 @@ public:
     void update(World* world) override;
     void present(World* world) override;
     void click(World* world) override;
+    ~BusView();
 private:
     // Variables
     bool to_draw = true;
     unsigned long time;
-    //FLBusTN api;
-    TraQuantoPassa api;
+    BusAPI* api;
     String stop_id, bus_line;
 
 };
