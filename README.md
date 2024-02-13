@@ -6,6 +6,10 @@
     <img src="https://img.shields.io/github/stars/fiatlinuxorg/chroniq" alt="Stars">
 </p>
 
+> **🚧 Important: Project Under Development**
+> 
+> This project is currently under active development and may undergo frequent changes, updates, and improvements. As such, certain features may be incomplete or subject to modification.
+
 ## Table of Contents
 
 - [Description](#description)
