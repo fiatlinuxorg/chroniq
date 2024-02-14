@@ -1,13 +1,3 @@
-/**
- * Clock class - clock.h
- *
- * This file contains the declaration of the Clock class.
- *
- * Author:  Mirko Lana
- * Date:    09/02/2024
- */
- 
-
 #ifndef __CLOCK_H__
 #define __CLOCK_H__
 
