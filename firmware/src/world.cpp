@@ -240,3 +240,45 @@ void World::remove_walls() {
             grid[i] = grid[i] ^ (1<<7);
     }
 }
+
+
+static void ledcAnalogWrite(uint8_t channel, uint32_t value,
+        uint32_t valueMax) {
+    // calculate duty, 4095 from 2 ^ 12 - 1
+    uint32_t duty = (4095 / valueMax) * min(value, valueMax);
+
+    Serial.print("Setting duty to: ");
+    Serial.println(duty);
+
+    // write duty to LEDC
+    ledcWrite(channel, duty);
+}
+
+/**
+ * Set the back light object
+ * 
+ * @param brightness 
+ * @param fade 
+ */
+extern void set_backlight(bool on, bool fade) {
+    uint8_t brightness = on ? 255 : 0;
+    if (fade) {
+        if (brightness == 0) {
+            Serial.println("Fading out");
+            for (int i = 255; i >= 0; i -= 5) {
+                ledcAnalogWrite(0, i);
+                delay(30);
+            }
+        } else {
+            Serial.println("Fading in");
+            for (int i = 0; i <= 255; i += 5) {
+                ledcAnalogWrite(0, i);
+                delay(30);
+            }
+        }
+    } else {
+        Serial.println("Setting brightness directly");
+
+        ledcAnalogWrite(0, brightness);
+    }
+}
