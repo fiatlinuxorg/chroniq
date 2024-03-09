@@ -14,27 +14,51 @@
 
 using namespace std;
 
-struct sched_task {
-    void (*task)(void);
-    int hour, minute;
-
-    sched_task(void (*task)(void), int hour, int minute);
-    void run();
-    bool same_time(int hour, int minute);
+enum task_action_e {
+    TASK_ACTION_BACKLIGHT,
+    TASK_ACTION_NO_BACKLIGHT,
+    TASK_ACTION_SET_VIEW
 };
 
 /**
- * Scheduler class
+ * @brief Struct to hold a scheduled task
+ */
+struct sched_task_t {
+    task_action_e action;
+    int hours, minutes;
+    void* arg;
+
+    sched_task_t(task_action_e action, int hours, int minutes, void* arg=nullptr);
+    bool same_time(int hours, int minutes);
+    void run();
+};
+
+/**
+ * @bief Scheduler class
  */
 class Scheduler {
     public:
         Scheduler(unsigned long interval);
-        void add_task(sched_task task);
+        Scheduler(unsigned long interval, vector<sched_task_t> tasks);
+        void add_task(sched_task_t task);
         void check_tasks();
 
     private:
         unsigned long last_check, check_interval;
-        vector<sched_task> tasks;
+        vector<sched_task_t> tasks;
 };
+
+/**
+ * @biref reference to the current view index
+ */
+extern int current_view_idx;
+
+/**
+ * @brief Set the current view
+ *
+ * @param idx The index of the view to set
+ */
+static void set_view(int idx);
+
 
 #endif // __SCHEDULER_H__

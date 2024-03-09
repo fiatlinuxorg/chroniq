@@ -9,6 +9,7 @@
 
 #include "scheduler.h"
 #include "clock.h"
+#include "world.h"
 
 #include <Arduino.h>
 #include <iostream>
@@ -17,54 +18,72 @@
 using namespace std;
 
 /**
- * Constructor for the sched_task struct
+ * @biref Constructor for the sched_task_t struct
  *
- * @param task The task to be run
- * @param hour The hour at which the task should be run
- * @param minute The minute at which the task should be run
+ * @param action The action to be performed
+ * @param hours The hours at which the task should be run
+ * @param minutes The minutes at which the task should be run
+ * @param arg The argument to be passed to the task
  */
-sched_task::sched_task(void (*task)(void), int hour, int minute) :
-    task(task), hour(hour), minute(minute) { /* Empty */ }
-
-/**
- * Run the task
- */
-void sched_task::run() {
-    task();
+sched_task_t::sched_task_t(task_action_e action, int hours, int minutes,
+        void* arg) : action(action), arg(arg) {
+    this->hours = (hours < 24) ? hours : 0;
+    this->minutes = (minutes < 60) ? minutes : 0;
 }
 
 /**
- * Check if the task should be run at the given time
+ * @brief Check if the task should be run at the given time
  *
- * @param hour The hour to check
- * @param minute The minute to check
+ * @param hours The hours to check
+ * @param minutes The minutes to check
  * @return True if the task should be run at the given time, false otherwise
  */
-bool sched_task::same_time(int hour, int minute) {
-    return this->hour == hour && this->minute == minute;
+bool sched_task_t::same_time(int hours, int minutes) {
+    return this->hours == hours && this->minutes == minutes;
 }
 
 /**
- * Constructor for the Scheduler class
+ * @biref Run the task
+ */
+void sched_task_t::run() {
+    switch (action) {
+        case TASK_ACTION_BACKLIGHT:
+            set_backlight(true, true);
+            break;
+        case TASK_ACTION_NO_BACKLIGHT:
+            set_backlight(false, true);
+            break;
+        case TASK_ACTION_SET_VIEW:
+            set_view((int)arg);
+            break;
+    }
+}
+
+/**
+ * @brief Constructor for the Scheduler class
  *
  * @param interval The interval at which the tasks should be checked
  */
-Scheduler::Scheduler(unsigned long interval) {
+Scheduler::Scheduler(unsigned long interval) : check_interval(interval) {
     last_check = millis();
-    check_interval = interval;
+}
+
+Scheduler::Scheduler(unsigned long interval, vector<sched_task_t> tasks) 
+    : Scheduler(interval) {
+    this->tasks = tasks;
 }
 
 /**
- * Add a task to the scheduler
+ * @brief Add a task to the scheduler
  *
  * @param task The task to be added
  */
-void Scheduler::add_task(sched_task task) {
+void Scheduler::add_task(sched_task_t task) {
     tasks.push_back(task);
 }
 
 /**
- * Check the tasks and run them if they are due
+ * @biref Check the tasks and run them if they are due
  */
 void Scheduler::check_tasks() {
     if (last_check + check_interval > millis()) {
@@ -72,15 +91,27 @@ void Scheduler::check_tasks() {
     }
 
     Clock clock = Clock::get_instance();
-    int hour, minute;
+    int hours, minutes;
 
-    hour = clock.get_hours();
-    minute = clock.get_minutes();
+    hours = clock.get_hours();
+    minutes = clock.get_minutes();
     last_check = millis();
 
     for (int i = 0; i < tasks.size(); i++) {
-        if (tasks[i].same_time(hour, minute)) {
+        if (tasks[i].same_time(hours, minutes)) {
             tasks[i].run();
         }
     }
 }
+
+int current_view_idx = 0;
+
+/**
+ * @brief Set the current view
+ *
+ * @param idx The index of the view to be set
+ */
+static void set_view(int idx) {
+   current_view_idx = idx;
+}
+

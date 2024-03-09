@@ -51,52 +51,16 @@ TFT_eSPI tft = TFT_eSPI();
 
 World world(&tft);
 View* views[NUM_VIEWS];
-int current_view_idx = 0;
 Scheduler scheduler(interval);
 
-
-const char *ssid = "Wifi Goliardica";
-const char *password = "Serata_scam123";
-
-void ledcAnalogWrite(uint8_t channel, uint32_t value, uint32_t valueMax = 255) {
-  // calculate duty, 4095 from 2 ^ 12 - 1
-  uint32_t duty = (4095 / valueMax) * min(value, valueMax);
-
-  // write duty to LEDC
-  ledcWrite(channel, duty);
-}
-
-void backlight() {
-    for (int i = 5; i <= 255; i += 5) {
-        ledcAnalogWrite(LEDC_CHANNEL_0, i);
-        delay(30);
-    }
-}
-
-void no_backlight() {
-    for (int i = 255; i >= 0; i -= 5) {
-        ledcAnalogWrite(LEDC_CHANNEL_0, i);
-        delay(30);
-    }
-}
+const char *ssid = "<SSID>";
+const char *password = "<PASSWORD>";
 
 void next_frame() {
     views[current_view_idx]->draw(&world);
     views[current_view_idx]->update(&world);
     world.draw();
     world.step();
-}
-
-void set_bus_view() {
-    current_view_idx = 1;
-    next_frame();
-    backlight();
-}
-
-void set_clock_view() {
-    current_view_idx = 0;
-    world.flush();
-    views[current_view_idx]->present(&world);
 }
 
 void setup() {
@@ -136,11 +100,33 @@ void setup() {
     views[2] = new BusView("fiera", "3");
     //views[2] = new MsgView();
     
-    scheduler.add_task(sched_task(&set_bus_view, 7, 0));
-    scheduler.add_task(sched_task(&set_clock_view, 9, 0));
-    scheduler.add_task(sched_task(&no_backlight, 23, 0));
+    // Example of how to set a task
+    sched_task_t task = {
+        .action = TASK_ACTION_SET_VIEW,
+        .hour = 7,
+        .minute = 0,
+        .arg = malloc(sizeof(int))
+    };
+    *((int*)task.arg) = 1;
+    scheduler.add_task(task);
 
-    ledcAnalogWrite(LEDC_CHANNEL_0, 255);
+    task = {
+        .action = TASK_ACTION_BACKLIGHT,
+        .hour = 7,
+        .minute = 0,
+        .arg = NULL
+    };
+    scheduler.add_task(task);
+
+    task = {
+        .action = TASK_ACTION_NO_BACKLIGHT,
+        .hour = 22,
+        .minute = 0,
+        .arg = NULL
+    };
+    scheduler.add_task(task);
+
+    set_backlight(true);
 }
 
 void loop() {

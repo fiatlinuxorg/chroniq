@@ -61,9 +61,7 @@ public:
     int draw_str(int x, int y, const char* str, int scale, enum World::Color color);
 
     void draw_rect(int x, int y, int w, int h, enum World::Color color);
-    void flush();
-
-    
+    void flush(); 
 
 private:
     TFT_eSPI* tft;
@@ -71,5 +69,16 @@ private:
     int width = W_WIDTH;
     int height = W_HEIGHT;
 };
+
+static void ledcAnalogWrite(uint8_t channel, uint32_t value,
+        uint32_t valueMax = 255);
+
+/**
+ * Set the backlight brightness
+ *
+ * @param brightness the brightness value (0-255)
+ * @param fade if true, the brightness will be changed gradually
+ */
+extern void set_backlight(bool on, bool fade = false);
 
 #endif
